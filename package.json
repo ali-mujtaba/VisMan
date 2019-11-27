@@ -1,0 +1,24 @@
+{
+  "name": "visman",
+  "version": "1.0.0",
+  "description": "entry management app",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ali-mujtaba/VisMan.git"
+  },
+  "author": "Ali Mujtaba",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ali-mujtaba/VisMan/issues"
+  },
+  "homepage": "https://github.com/ali-mujtaba/VisMan#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "ejs": "^3.0.1",
+    "express": "^4.17.1"
+  }
+}
