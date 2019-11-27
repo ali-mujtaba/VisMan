@@ -1,0 +1,14 @@
+.container {
+	padding: 1em 5em 1em 3em;
+	margin: 2em 10em 2em 10em;
+	border: solid 2px silver;
+	font-size: large;
+}
+
+.ui.form .field>label{
+	font-size: large;
+}
+
+h2{
+	text-align: center;
+}
