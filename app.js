@@ -56,7 +56,7 @@ app.post("/new",function(req,res){
 		}else{
 			var mailOptions = {
 			  from: 'mujtaba.ali42@gmail.com', 
-			  to: 'am.alimujtaba@gmail.com',
+			  to: req.body.HEmail,
 			  subject: 'You have a Visitor',
 			  text: visitorDetails
 			};
@@ -98,7 +98,20 @@ app.put("/:Reference_No",function(req,res){
 		if(error){
 			throw error;
 		} else {
-			res.send("Thank you for visiting!");
+			var mailOptions = {
+			  from: 'mujtaba.ali42@gmail.com', 
+			  to: req.body.VEmail,
+			  subject: 'Thank you for visiting!',
+			  text: visitDetails
+			};
+
+			transporter.sendMail(mailOptions, function(error, info){
+			  if (error) {
+			    console.log(error);
+			  } else {
+	  				res.send("Thank you for visiting!");
+				}
+			});
 		}
 	})
 })
