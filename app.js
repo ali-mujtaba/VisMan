@@ -10,6 +10,16 @@ var pool  = mysql.createPool({
   database        : 'visman'
 });
 
+var nodemailer = require('nodemailer');
+
+var transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'youremail@gmail.com', // enter you Gmail email here
+    pass: 'yourpassword' // enter password
+  }
+});
+
 
 console.log("DB connected!");
 
@@ -28,14 +38,33 @@ app.get("/new",function(req,res){
 app.post("/new",function(req,res){
 	var queryStr = "INSERT INTO Entries VALUES (NULL,'"+req.body.VName+"','"+req.body.VEmail+"',"+req.body.VPhone+",'"+req.body.VCheckInTime+"',NULL,'"+req.body.HName+"','"+req.body.HEmail+"',"+req.body.HPhone+");";
 	console.log(queryStr);
+	var visitorDetails = "Visitor Details:- \n\nName: "+req.body.VName+"\nEmail: "+req.body.VEmail+"\nPhone: "+req.body.VPhone;
 	pool.query(queryStr,function(error,results,fields){
 		if(error){
 			throw error;
 		}else{
-			console.log("Entry added!");
+			var mailOptions = {
+			  from: 'fromemail@gmail.com', 
+			  to: 'toemail@gmail.com',
+			  subject: 'You have a Visitor',
+			  text: visitorDetails
+			};
+			console.log(mailOptions);
+			transporter.sendMail(mailOptions, function(error, info){
+			  if (error) {
+			    console.log(error);
+			  } else {
+			    console.log('Email sent: ' + info.response);
+			  }
+			});
 		}
 	})
 });
+
+
+
+
+
 
 app.listen(3000,function(){
 	console.log("Server is online!");
