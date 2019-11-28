@@ -19,8 +19,8 @@ var pool  = mysql.createPool({
 var transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'mujtaba.ali42@gmail.com', // enter you Gmail email here
-    pass: '*ALImujtaba@gmail' // enter password
+    user: 'thatgeekykid123@gmail.com', // enter your Gmail email here
+    pass: 'ALImujtaba@12*' // enter password
   }
 });
 
