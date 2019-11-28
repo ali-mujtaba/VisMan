@@ -37,8 +37,12 @@ app.use(express.static(__dirname+"/public"));
 app.use(methodOverride("_method"));
 
 app.get("/",function(req,res){
-	res.redirect("/new");
+	res.render("home");
 });
+
+app.post("/",function(req,res){
+	res.redirect("/"+req.body.refNo);
+})
 
 app.get("/new",function(req,res){
 	res.render("new");
@@ -46,7 +50,7 @@ app.get("/new",function(req,res){
 
 app.post("/new",function(req,res){
 	
-	var queryStr = "INSERT INTO Entries VALUES (NULL,'"+req.body.VName+"','"+req.body.VEmail+"',"+req.body.VPhone+",'"+req.body.VCheckInTime+"',NULL,'"+req.body.HName+"','"+req.body.HEmail+"',"+req.body.HPhone+");";
+	var queryStr = "INSERT INTO Entries VALUES (NULL,'"+req.body.VName+"','"+req.body.VEmail+"',"+req.body.VPhone+",'"+req.body.VCheckInTime+"',NULL,'"+req.body.HName+"','"+req.body.HEmail+"',"+req.body.HPhone+", NULL"+");";
 	
 	var visitorDetails = "Visitor Details:- \n\nName: "+req.body.VName+"\nEmail: "+req.body.VEmail+"\nPhone: "+req.body.VPhone;
 	
@@ -84,7 +88,11 @@ app.get("/:Reference_No",function(req,res){
 		if(error){
 			throw error;
 		}else{
-			res.render("show",{entry:results[0]});
+			if(results[0]==undefined){
+				res.send("Invalid Reference Number");
+			}else{
+				res.render("show",{entry:results[0]});
+			}
 		}
 	});
 });
@@ -113,8 +121,8 @@ app.put("/:Reference_No",function(req,res){
 				}
 			});
 		}
-	})
-})
+	});
+});
 
 
 app.listen(3000,function(){

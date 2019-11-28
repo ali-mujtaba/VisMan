@@ -5,7 +5,7 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/components/form.min.css" integrity="sha256-6tf0AClYiuHJlBUGu5WshPdGrW7hGecAfPADkTlGyiY=" crossorigin="anonymous" /></head>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/components/button.min.css" integrity="sha256-xtpiJw1+6DW1Oac4CVyU7PbCxHxufOBIspA9T79Y384=" crossorigin="anonymous" />
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/components/container.min.css" integrity="sha256-7rJADGJ6l3YF6uxVoTB1b6xhQb93nEsuYsCBmXQX7Ds=" crossorigin="anonymous" />
-		    <link rel="stylesheet" href="/stylesheets/show.css">
+	<link rel="stylesheet" href="/stylesheets/show.css">
 
 <body>
 	<div class="ui container">
@@ -34,7 +34,7 @@
  		    <% if(entry.VCheckOutTime!=null) {%>
 		    <input type="time" name="VCheckOutTime" value="<%=entry.VCheckOutTime%>" readonly>
 		  	<%} else { %> 
-		  		<input type="time" name="VCheckOutTime" value="<%=entry.VCheckOutTime%>">
+		  		<input type="time" name="VCheckOutTime" value="<%=entry.VCheckOutTime%>" required>
 		  	<%}%>
  		  </div>
 
