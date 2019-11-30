@@ -1,33 +1,42 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const app = express();
-var methodOverride = require('method-override');
-const orgAddress = "FRK Hostel, Jamia Millia Islamia"; //update organisation address here
-var mysql = require("mysql");
+const dotenv = require('dotenv');
+const bodyParser = require('body-parser');
+const methodOverride = require('method-override');
+const mysql = require("mysql");
 const nodemailer = require('nodemailer');
 const Nexmo = require('nexmo');
 
+const orgAddress = "FRK Hostel, Jamia Millia Islamia"; //update organisation address here
+
+dotenv.config();
+
+const DB_host = process.env.DATABASE_HOST || 'localhost';
+const DB_user = process.env.DATABASE_USER || 'visman';
+const DB_pass = process.env.DATABASE_PASS || 'abcd1234';
+const DB_name = process.env.DATABASE_NAME || 'visman';
+
 var pool  = mysql.createPool({
   connectionLimit : 10,
-  host            : 'localhost',
-  user            : 'visman',
-  password        : 'abcd1234',
-  database        : 'visman'
+  host            : DB_host,
+  user            : DB_user,
+  password        : DB_pass,
+  database        : DB_name
 });
 
 
 var transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'thatgeekykid123@gmail.com', // enter your Gmail email here
-    pass: 'ALImujtaba@12*' // enter password
+    user: process.env.SERVICING_GMAIL_ID, // enter your Gmail email here
+    pass: process.env.SERVICING_GMAIL_PASS // enter password
   }
 });
 
 
 const nexmo = new Nexmo({
-  apiKey: '49c7d071',
-  apiSecret: 'dVrJ2ThHRqD5L1zC',
+  apiKey: process.env.NEXMO_API_KEY,
+  apiSecret: process.env.NEXMO_API_SECRET,
 });
 
 
@@ -41,14 +50,14 @@ app.get("/",function(req,res){
 });
 
 app.post("/",function(req,res){
-	res.redirect("/"+req.body.refNo);
+	res.redirect("/appointments/"+req.body.refNo);
 })
 
-app.get("/new",function(req,res){
+app.get("/appointments/new",function(req,res){
 	res.render("new");
 });
 
-app.post("/new",function(req,res){
+app.post("/appointments",function(req,res){
 	
 	var queryStr = "INSERT INTO Entries VALUES (NULL,'"+req.body.VName+"','"+req.body.VEmail+"',"+req.body.VPhone+",'"+req.body.VCheckInTime+"',NULL,'"+req.body.HName+"','"+req.body.HEmail+"',"+req.body.HPhone+", NULL"+");";
 	
@@ -56,12 +65,13 @@ app.post("/new",function(req,res){
 	
 	pool.query(queryStr,function(error,results,fields){
 		if(error){
-			throw error;
+			console.log(error);
+			res.redirect("/");
 		}else{
 			var mailOptions = {
-			  from: 'mujtaba.ali42@gmail.com', 
+			  from: process.env.SERVICING_GMAIL_ID, 
 			  to: req.body.HEmail,
-			  subject: 'You have a Visitor',
+			  subject: 'VisMan: You have a Visitor',
 			  text: visitorDetails
 			};
 
@@ -71,22 +81,23 @@ app.post("/new",function(req,res){
 			  } else {
 			    console.log('Email sent: ' + info.response);
 			    const from = 'VisMan';
-				var to = '917042104749'; // hard coding the host phone number since only this number is whitelisted on nexmo trial account
-			    // to = "91"+req.body.HPhone; // un-comment to replace hard-coded number with host phone number
+				// var to = '917042104749'; // hard coding the host phone number since only this number is whitelisted on nexmo trial account
+			    var to = "91"+req.body.HPhone; // un-comment to replace hard-coded number with host phone number
 			    
 			    nexmo.message.sendSms(from, to, visitorDetails);
-			    res.redirect("/"+results.insertId);
+			    res.redirect("/appointments/"+results.insertId);
 			  }
 			});
 		}
 	});
 });
 
-app.get("/:Reference_No",function(req,res){
+app.get("/appointments/:Reference_No",function(req,res){
 	var queryStr = "SELECT * FROM Entries WHERE Reference_No="+req.params.Reference_No+";";
 	pool.query(queryStr,function(error,results,fields){
 		if(error){
-			throw error;
+			console.log(error);
+			res.redirect("/");
 		}else{
 			if(results[0]==undefined){
 				res.send("Invalid Reference Number");
@@ -97,19 +108,20 @@ app.get("/:Reference_No",function(req,res){
 	});
 });
 
-app.put("/:Reference_No",function(req,res){
+app.put("/appointments/:Reference_No",function(req,res){
 	var queryStr = "UPDATE Entries SET VCheckOutTime='"+req.body.VCheckOutTime+"' WHERE Reference_No="+req.params.Reference_No+";";
 	
 	var visitDetails = "Visit Details:- \n\nName: "+req.body.VName+"\nPhone: "+req.body.VPhone+"\nCheck-in time: "+req.body.VCheckInTime+"\nCheck-out time: "+req.body.VCheckOutTime+"\nHost Name: "+req.body.HName+"\nAddress Visited: "+orgAddress;
 
 	pool.query(queryStr,function(error,results,fields){
 		if(error){
-			throw error;
+			console.log(error);
+			res.redirect("/");
 		} else {
 			var mailOptions = {
-			  from: 'mujtaba.ali42@gmail.com', 
+			  from: process.env.SERVICING_GMAIL_ID, 
 			  to: req.body.VEmail,
-			  subject: 'Thank you for visiting!',
+			  subject: 'VisMan: Thank you for visiting!',
 			  text: visitDetails
 			};
 
@@ -124,7 +136,7 @@ app.put("/:Reference_No",function(req,res){
 	});
 });
 
-
-app.listen(3000,function(){
+const port = process.env.PORT || 3000;
+app.listen(port,process.env.IP,function(){
 	console.log("Server is online!");
 });
