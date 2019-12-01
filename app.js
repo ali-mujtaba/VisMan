@@ -7,11 +7,12 @@ const mysql = require("mysql");
 const nodemailer = require('nodemailer');
 const Nexmo = require('nexmo');
 
-const orgAddress = "FRK Hostel, Jamia Millia Islamia"; //update organisation address here
+const orgAddress = process.env.ORGANISATION_ADDRESS || "Earth-616, The Milky Way";
 
 dotenv.config();
 
 const DB_host = process.env.DATABASE_HOST || 'localhost';
+const DB_port = process.env.DATABASE_PORT || 3306;
 const DB_user = process.env.DATABASE_USER || 'visman';
 const DB_pass = process.env.DATABASE_PASS || 'abcd1234';
 const DB_name = process.env.DATABASE_NAME || 'visman';
@@ -19,6 +20,7 @@ const DB_name = process.env.DATABASE_NAME || 'visman';
 var pool  = mysql.createPool({
   connectionLimit : 10,
   host            : DB_host,
+  port            : DB_port,
   user            : DB_user,
   password        : DB_pass,
   database        : DB_name
