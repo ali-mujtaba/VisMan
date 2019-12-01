@@ -10,9 +10,9 @@
 <body>
 	<div class="ui container">
 		<form class="ui form" action="/appointments/<%=entry.Reference_No%>?_method=PUT" method="POST">
-			<h2> Reference No.: <%=entry.Reference_No%> </h2>
-			<br>
-			<h3> Guest Details </h3>
+			<h1> Reference No.: <%=entry.Reference_No%> </h1>
+			<br>	
+			<h2> Guest Details </h2>
 		  <div class="field">
 		    <label>Name</label>
 		    <input type="text" name="VName" placeholder="Full Name" value="<%=entry.VName%>" readonly>
@@ -38,7 +38,7 @@
 		  	<%}%>
  		  </div>
 
-		  <h3> Host Details </h3>
+		  <h2> Host Details </h2>
 
 		  <div class="field">
 		    <label>Name</label>
@@ -52,7 +52,9 @@
 		    <label>Phone</label>
 		    <input type="tel" name="HPhone" placeholder="10-digits" value="<%=entry.HPhone%>" readonly>
 		  </div>
-		  <button class="ui blue basic button" type="submit">Submit</button>
+		<% if(entry.VCheckOutTime==null){%> 
+			<button class="ui blue basic button" type="submit">Checkout</button>
+		<%}%>	
 		</form>
 		
 	</div>
