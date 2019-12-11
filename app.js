@@ -35,10 +35,12 @@ var transporter = nodemailer.createTransport({
   }
 });
 
+const NEXMO_API_KEY = process.env.NEXMO_API_KEY;
+const NEXMO_API_SECRET = process.env.NEXMO_API_SECRET;
 
 const nexmo = new Nexmo({
-  apiKey: process.env.NEXMO_API_KEY,
-  apiSecret: process.env.NEXMO_API_SECRET,
+  apiKey: NEXMO_API_KEY,
+  apiSecret: NEXMO_API_SECRET,
 });
 
 
@@ -78,18 +80,32 @@ app.post("/appointments",function(req,res){
 			};
 
 			transporter.sendMail(mailOptions, function(error, info){
-			  if (error) {
-			    console.log(error);
-			  } else {
-			    console.log('Email sent: ' + info.response);
-			    const from = 'VisMan';
-				// var to = '917042104749'; // hard coding the host phone number since only this number is whitelisted on nexmo trial account
-			    var to = "91"+req.body.HPhone; // un-comment to replace hard-coded number with host phone number
-			    
-			    nexmo.message.sendSms(from, to, visitorDetails);
-			    res.redirect("/appointments/"+results.insertId);
-			  }
+				if (error) {
+					console.log(error);
+				} else {
+				    console.log('Email sent: ' + info.response);
+				    const from = 'VisMan';
+					// var to = '917042104749'; // hard coding the host phone number since only this number is whitelisted on nexmo trial account
+				    const to = '91'+req.body.HPhone; // un-comment to replace hard-coded number with host phone number
+				    const text = visitorDetails;
+				    nexmo.message.sendSms(from, to, text, (err, responseData) => {
+	    				if (err) {
+	        				console.log(err);
+	    				} else {
+	        				if(responseData.messages[0]['status'] === "0") {
+		            			console.log("Message sent successfully.");
+	        				} else if(responseData.messages[0]['status'] === "29"){
+	            				console.log(`Message failed with error: ${responseData.messages[0]['error-text']}`);
+	            				console.log("Message cannot be sent to non-whitelisted number. Let me know in order to whitelist your number!");
+	        				} else {
+	            				console.log(`Message failed with error: ${responseData.messages[0]['error-text']}`);
+				        	}
+				    	}
+	    				res.redirect("/appointments/"+results.insertId);
+					});
+				}
 			});
+
 		}
 	});
 });
